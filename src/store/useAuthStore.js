@@ -8,14 +8,40 @@ import {
     GoogleAuthProvider,
     signInWithPopup
 } from 'firebase/auth'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { auth, db } from '../lib/firebase'
+
+const getAgeGroup = (age) => {
+    const a = parseInt(age)
+    if (a < 13) return 'kids'
+    if (a < 25) return 'youth'
+    if (a < 60) return 'adults'
+    return 'elders'
+}
 
 export const useAuthStore = create((set) => ({
     user: null,
     loading: true,
 
     initialize: () => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            set({ user, loading: false })
+        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+            if (firebaseUser) {
+                // Fetch profile
+                try {
+                    const docRef = doc(db, 'users', firebaseUser.uid)
+                    const docSnap = await getDoc(docRef)
+                    if (docSnap.exists()) {
+                        set({ user: { ...firebaseUser, ...docSnap.data() }, loading: false })
+                    } else {
+                        set({ user: firebaseUser, loading: false })
+                    }
+                } catch (e) {
+                    console.error("Error fetching user profile:", e)
+                    set({ user: firebaseUser, loading: false })
+                }
+            } else {
+                set({ user: null, loading: false })
+            }
         })
         return unsubscribe
     },
@@ -28,9 +54,22 @@ export const useAuthStore = create((set) => ({
         }
     },
 
-    signUp: async (email, password) => {
+    signUp: async (email, password, age) => {
         try {
-            await createUserWithEmailAndPassword(auth, email, password)
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+            const user = userCredential.user
+
+            // Create user profile
+            const ageGroup = getAgeGroup(age)
+            await setDoc(doc(db, 'users', user.uid), {
+                email,
+                age,
+                ageGroup,
+                createdAt: new Date()
+            })
+
+            // Update local state immediately
+            set({ user: { ...user, age, ageGroup } })
         } catch (error) {
             throw error
         }

@@ -1,14 +1,19 @@
 import React, { useState } from 'react'
 import { Send, Search, Zap, Shield, Heart, HelpCircle } from 'lucide-react'
 import { Layout } from '../components/layout/Layout'
-import { AgeSelector } from '../components/wisdom/AgeSelector'
+// import { AgeSelector } from '../components/wisdom/AgeSelector'
 import { WisdomCard } from '../components/wisdom/WisdomCard'
+import { useAuthStore } from '../store/useAuthStore' // Import Auth Store
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { WISDOM_DB, TOPICS } from '../lib/data'
 
 export default function Landing() {
-    const [ageGroup, setAgeGroup] = useState('adults')
+    const { user } = useAuthStore()
+    // Use user's ageGroup if logged in, otherwise default to 'adults'
+    const ageGroup = user?.ageGroup || 'adults'
+
+    // const [ageGroup, setAgeGroup] = useState('adults') // Removed state
     const [query, setQuery] = useState('')
     const [loading, setLoading] = useState(false)
     const [wisdom, setWisdom] = useState(null)
@@ -83,16 +88,14 @@ export default function Landing() {
                 {/* Header Section */}
                 <div className="text-center space-y-6 mb-12 animate-fade-in">
                     <h1 className="text-4xl md:text-6xl font-serif font-bold text-gray-900 tracking-tight">
-                        Wisdom for <span className="text-sun-600 capitalize">{ageGroup}</span>
+                        Wisdom {user ? <span className="text-sun-600 capitalize">for {ageGroup}</span> : <span className="text-sun-600">for Life</span>}
                     </h1>
                     <p className="text-lg text-gray-600 max-w-xl mx-auto font-light">
-                        Ancient guidance tailored to your life stage.
+                        {user ? "Ancient guidance tailored to your life stage." : "Sign in to get wisdom adapted to your age."}
                         <br />Select a problem to find your answer.
                     </p>
 
-                    <div className="pt-4">
-                        <AgeSelector currentGroup={ageGroup} onSelect={setAgeGroup} />
-                    </div>
+                    {/* AgeSelector Removed */}
                 </div>
 
                 {/* Topics Grid */}
