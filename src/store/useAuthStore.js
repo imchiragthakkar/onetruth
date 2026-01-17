@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { auth } from '../lib/firebase'
+// import { auth } from '../lib/firebase'
 import {
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
