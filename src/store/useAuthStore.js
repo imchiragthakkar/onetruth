@@ -8,7 +8,7 @@ import {
     GoogleAuthProvider,
     signInWithPopup
 } from 'firebase/auth'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import { auth, db } from '../lib/firebase'
 
 const getAgeGroup = (age) => {
@@ -90,6 +90,29 @@ export const useAuthStore = create((set) => ({
             set({ user: null })
         } catch (error) {
             console.error(error)
+        }
+    },
+
+    updateProfile: async (data) => {
+        try {
+            const { age } = data
+            const updates = { ...data }
+
+            if (age) {
+                updates.ageGroup = getAgeGroup(age)
+            }
+
+            const user = auth.currentUser
+            if (!user) throw new Error("No user logged in")
+
+            await updateDoc(doc(db, 'users', user.uid), updates)
+
+            // Update local state
+            set(state => ({
+                user: { ...state.user, ...updates }
+            }))
+        } catch (error) {
+            throw error
         }
     }
 }))

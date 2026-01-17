@@ -27,9 +27,11 @@ export function Navbar() {
                                 <Button variant="ghost" size="sm">Hub</Button>
                             </Link>
                             <div className="flex items-center space-x-2 pl-4 border-l border-gray-200">
-                                <div className="w-8 h-8 rounded-full bg-sun-100 flex items-center justify-center text-sun-700">
-                                    <User size={16} />
-                                </div>
+                                <Link to="/profile">
+                                    <div className="w-8 h-8 rounded-full bg-sun-100 flex items-center justify-center text-sun-700 hover:ring-2 hover:ring-sun-200 transition-all cursor-pointer">
+                                        <User size={16} />
+                                    </div>
+                                </Link>
                                 <button onClick={handleSignOut} className="text-gray-400 hover:text-red-500 transition-colors">
                                     <LogOut size={18} />
                                 </button>
