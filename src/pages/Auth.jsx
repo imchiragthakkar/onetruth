@@ -11,7 +11,7 @@ export default function Auth() {
     const [isLogin, setIsLogin] = useState(true)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [age, setAge] = useState('')
+    const [dob, setDob] = useState('')
     const [error, setError] = useState('')
     const { signIn, signUp, signInWithGoogle } = useAuthStore()
     const navigate = useNavigate()
@@ -23,8 +23,8 @@ export default function Auth() {
             if (isLogin) {
                 await signIn(email, password)
             } else {
-                if (!age) throw new Error("Please enter your age")
-                await signUp(email, password, age)
+                if (!dob) throw new Error("Please enter your date of birth")
+                await signUp(email, password, dob)
             }
             navigate('/dashboard')
         } catch (err) {
@@ -114,17 +114,16 @@ export default function Auth() {
 
                         {!isLogin && (
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
-                                <Input
-                                    type="number"
-                                    min="5"
-                                    max="120"
-                                    value={age}
-                                    onChange={e => setAge(e.target.value)}
-                                    placeholder="Enter your age"
-                                    required
-                                />
-                                <p className="text-xs text-gray-500 mt-1">We'll adapt the wisdom to your life stage.</p>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                                    <Input
+                                        type="date"
+                                        value={dob}
+                                        onChange={e => setDob(e.target.value)}
+                                        required
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">We'll use this to adapt the wisdom to your life stage.</p>
+                                </div>
                             </div>
                         )}
 

@@ -9,7 +9,7 @@ import { User, Mail, Calendar, LogOut, Edit2, Save, X } from 'lucide-react'
 export default function Profile() {
     const { user, signOut, updateProfile } = useAuthStore()
     const [isEditing, setIsEditing] = useState(false)
-    const [age, setAge] = useState(user?.age || '')
+    const [dob, setDob] = useState(user?.dob || '')
     const [loading, setLoading] = useState(false)
 
     if (!user) {
@@ -25,7 +25,7 @@ export default function Profile() {
     const handleUpdate = async () => {
         setLoading(true)
         try {
-            await updateProfile({ age })
+            await updateProfile({ dob })
             setIsEditing(false)
         } catch (error) {
             console.error("Failed to update profile", error)
@@ -62,7 +62,7 @@ export default function Profile() {
                             {!isEditing ? (
                                 <button
                                     onClick={() => {
-                                        setAge(user.age || '')
+                                        setDob(user.dob || '')
                                         setIsEditing(true)
                                     }}
                                     className="p-2 text-gray-400 hover:text-sun-600 hover:bg-sun-50 rounded-full transition-colors"
@@ -93,14 +93,14 @@ export default function Profile() {
                             <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                                 <Calendar size={20} className="text-gray-400" />
                                 <div className="flex-1">
-                                    <p className="text-xs text-gray-500 uppercase tracking-wider">Age & Wisdom Stage</p>
+                                    <p className="text-xs text-gray-500 uppercase tracking-wider">Date of Birth & Wisdom Stage</p>
                                     {isEditing ? (
                                         <div className="flex items-center gap-2 mt-1">
                                             <Input
-                                                type="number"
-                                                value={age}
-                                                onChange={e => setAge(e.target.value)}
-                                                className="w-24 h-9"
+                                                type="date"
+                                                value={dob}
+                                                onChange={e => setDob(e.target.value)}
+                                                className="w-40 h-9"
                                             />
                                             <Button size="sm" onClick={handleUpdate} disabled={loading}>
                                                 {loading ? 'Saving...' : 'Save'}
@@ -108,7 +108,10 @@ export default function Profile() {
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-3 mt-1">
-                                            <span className="text-gray-900 font-medium">{user.age || 'N/A'} years</span>
+                                            <div className="flex flex-col">
+                                                <span className="text-gray-900 font-medium">{user.dob || 'N/A'}</span>
+                                                <span className="text-xs text-gray-500">{user.age || '0'} years old</span>
+                                            </div>
                                             <span className={`px-2 py-0.5 text-xs font-bold uppercase tracking-wide rounded border ${ageGroupColors[user.ageGroup] || 'bg-gray-100 text-gray-600'}`}>
                                                 {user.ageGroup}
                                             </span>

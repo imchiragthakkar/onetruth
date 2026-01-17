@@ -11,11 +11,21 @@ import {
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import { auth, db } from '../lib/firebase'
 
+const calculateAge = (dob) => {
+    const birthDate = new Date(dob)
+    const today = new Date()
+    let age = today.getFullYear() - birthDate.getFullYear()
+    const m = today.getMonth() - birthDate.getMonth()
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--
+    }
+    return age
+}
+
 const getAgeGroup = (age) => {
-    const a = parseInt(age)
-    if (a < 13) return 'kids'
-    if (a < 25) return 'youth'
-    if (a < 60) return 'adults'
+    if (age < 13) return 'kids'
+    if (age < 25) return 'youth'
+    if (age < 60) return 'adults'
     return 'elders'
 }
 
@@ -54,22 +64,25 @@ export const useAuthStore = create((set) => ({
         }
     },
 
-    signUp: async (email, password, age) => {
+    signUp: async (email, password, dob) => {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password)
             const user = userCredential.user
 
-            // Create user profile
+            // Calculate age and group
+            const age = calculateAge(dob)
             const ageGroup = getAgeGroup(age)
+
             await setDoc(doc(db, 'users', user.uid), {
                 email,
+                dob,
                 age,
                 ageGroup,
                 createdAt: new Date()
             })
 
             // Update local state immediately
-            set({ user: { ...user, age, ageGroup } })
+            set({ user: { ...user, dob, age, ageGroup } })
         } catch (error) {
             throw error
         }
@@ -95,10 +108,12 @@ export const useAuthStore = create((set) => ({
 
     updateProfile: async (data) => {
         try {
-            const { age } = data
+            const { dob } = data
             const updates = { ...data }
 
-            if (age) {
+            if (dob) {
+                const age = calculateAge(dob)
+                updates.age = age
                 updates.ageGroup = getAgeGroup(age)
             }
 
