@@ -7,7 +7,29 @@ export default {
     theme: {
         extend: {
             colors: {
-                sun: {
+                primary: {
+                    50: '#fff5ec',
+                    100: '#ffe8d3',
+                    200: '#ffcca5',
+                    300: '#ffad72',
+                    400: '#ff893f',
+                    500: '#ff6b35', // Sunrise Orange
+                    600: '#f05a22',
+                    700: '#c84318',
+                    800: '#9f3619',
+                    900: '#802f18',
+                },
+                secondary: {
+                    DEFAULT: '#fdf6e3', // Soft Cream
+                    100: '#ffffff',
+                    200: '#fdf6e3',
+                    300: '#fceecc',
+                },
+                accent: {
+                    DEFAULT: '#ffd700', // Light Gold
+                    light: '#ffe44d',
+                },
+                sun: { // Keeping for backward compatibility temporarily
                     50: '#fff8f1',
                     100: '#ffefd8',
                     200: '#ffd09a',
@@ -21,8 +43,8 @@ export default {
                 }
             },
             fontFamily: {
-                sans: ['Inter', 'sans-serif'],
-                serif: ['Merriweather', 'serif'],
+                sans: ['Outfit', 'Inter', 'sans-serif'],
+                serif: ['Playfair Display', 'Merriweather', 'serif'],
             },
             animation: {
                 'fade-in': 'fadeIn 0.5s ease-out',
