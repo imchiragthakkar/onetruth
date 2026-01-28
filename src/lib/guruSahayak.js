@@ -44,10 +44,45 @@ TONE & PERSONALITY CONTROLLER
 `;
 
 const AGE_ADAPTATION_RULES = {
-    kids: "Sentence Length: Short. Vocabulary: Very simple. Tone: Gentle, reassuring. Avoid: Abstract ideas, philosophical terms.", // <14
-    youth: "Sentence Length: Short. Vocabulary: Very simple. Tone: Gentle, reassuring. Avoid: Abstract philosophy, complex terminology.", // 14-18
-    adults: "Sentence Length: Medium. Vocabulary: Clear, modern. Tone: Supportive and reflective.", // 19-35
-    elders: "Sentence Length: Medium. Vocabulary: Mature, grounded. Tone: Calm and wise." // 36-60+
+    // Mapping: youth -> 14-18
+    youth: `
+    Target Age: 14-18
+    Context Injection:
+    - Assumed Capabilities: Emotional sensitivity, developing identity, limited life experience.
+    - Forbidden Assumptions: Romantic experience, career responsibility, financial independence.
+    - Content Restrictions: NO adult relationship framing, NO irreversible life advice, NO pressure-based language.
+    - Safety Policy (Minors): NO encouragement of secrecy, NO discouraging trusted adults, NO dependency language.
+    Language Adjustment: Short sentences, very simple vocabulary, gentle/reassuring tone.
+    `,
+
+    // Mapping: adults -> 19-35
+    adults: `
+    Target Age: 19-35
+    Context Injection:
+    - Assumed Capabilities: Independent decision making, identity exploration, career/relationship questions.
+    - Forbidden Assumptions: Marriage, parenthood, career stability (do not assume these exist unless stated).
+    - Content Restrictions: NO deterministic career advice, NO life-decision commands.
+    Language Adjustment: Medium sentence length, clear/modern vocabulary, supportive/reflective tone.
+    `,
+
+    // Mapping: elders -> 36-60
+    elders: `
+    Target Age: 36-60
+    Context Injection:
+    - Assumed Capabilities: Life experience, family/social responsibility, long-term perspective.
+    - Forbidden Assumptions: Burnout, midlife crisis, parenthood (do not assume).
+    - Content Restrictions: NO age-shaming, NO decline-based framing.
+    Language Adjustment: Medium sentence length, mature/grounded vocabulary, calm/wise tone.
+    `,
+
+    // Fallback/Legacy for kids (<14) - applying strictest minor protections
+    kids: `
+    Target Age: <14
+    Context Injection:
+    - strict focus on simple emotional regulation and play-based metaphors.
+    - Safety Policy: STRICT minor protections. Always encourage talking to parents.
+    Language Adjustment: Very short, simple.
+    `
 };
 
 const AGENT_ROLES = {
