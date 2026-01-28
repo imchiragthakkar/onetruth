@@ -1,16 +1,20 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Layout } from '../components/layout/Layout'
 import { useAuthStore } from '../store/useAuthStore'
 import { useWisdomStore } from '../store/useWisdomStore'
 import { CategoryCard } from '../components/CategoryCard'
 import { StoryView } from '../components/StoryView'
 import { WitnessButton } from '../components/WitnessButton'
+import { GuruChat } from '../components/GuruChat'
 import { WISDOM_DATA } from '../lib/wisdomContent'
 import { Navigate } from 'react-router-dom'
+import { MessageSquare } from 'lucide-react'
+import { Button } from '../components/ui/Button'
 
 export default function Dashboard() {
     const { user, loading } = useAuthStore()
     const { activeStory, openStory, setCategory } = useWisdomStore()
+    const [isGuruOpen, setIsGuruOpen] = useState(false)
 
     if (!loading && !user) {
         return <Navigate to="/auth" />
@@ -24,6 +28,8 @@ export default function Dashboard() {
     return (
         <Layout>
             {activeStory && <StoryView />}
+
+            <GuruChat isOpen={isGuruOpen} onClose={() => setIsGuruOpen(false)} />
 
             <div className="container mx-auto px-4 py-8 max-w-4xl relative min-h-screen">
                 <header className="mb-12 text-center space-y-2">
@@ -51,9 +57,18 @@ export default function Dashboard() {
                     </p>
                 </div>
 
-                <WitnessButton />
+                <div className="fixed bottom-6 right-6 flex flex-col gap-4 items-end z-40">
+                    <WitnessButton />
+                    <Button
+                        onClick={() => setIsGuruOpen(true)}
+                        className="rounded-full w-14 h-14 bg-primary-600 hover:bg-primary-700 text-white shadow-lg flex items-center justify-center transition-all hover:scale-105"
+                    >
+                        <MessageSquare size={24} />
+                    </Button>
+                </div>
             </div>
         </Layout>
     )
 }
+
 
