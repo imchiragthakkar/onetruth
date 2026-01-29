@@ -1,4 +1,4 @@
-import { CORE_VISION, TONE_CONTROLLER, AGE_CONTROLLER, PROBLEM_CATEGORIZATION, ROOT_CAUSE_QUESTIONING } from '../lib/prompts';
+import { CORE_VISION, TONE_CONTROLLER, AGE_CONTROLLER, PROBLEM_CATEGORIZATION, ROOT_CAUSE_QUESTIONING, INSIGHT_SYNTHESIS } from '../lib/prompts';
 
 export function mockAIResponse(input) {
     // Helper to simulate loading a prompt (in a real scenario, this might return the text)
@@ -18,6 +18,7 @@ export function mockAIResponse(input) {
     if (task === "TASK_3") return loadPrompt(AGE_CONTROLLER);
     if (task === "TASK_4_PROBLEM_CATEGORIZATION") return loadPrompt(PROBLEM_CATEGORIZATION);
     if (task === "TASK_5_ROOT_CAUSE_QUESTIONING") return loadPrompt(ROOT_CAUSE_QUESTIONING);
+    if (task === "TASK_6_INSIGHT_SYNTHESIS") return loadPrompt(INSIGHT_SYNTHESIS);
 
     return {
         role: "assistant",
