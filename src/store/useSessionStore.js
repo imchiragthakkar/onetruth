@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { classifySession } from '../lib/patternClassifier';
+import { selectDomains } from '../lib/domainSelector';
 
 export const useSessionStore = create(
     persist(
@@ -12,11 +13,21 @@ export const useSessionStore = create(
                 // Run Classification
                 const initialPatterns = classifySession(sessionData);
 
+                // Run Domain Selection
+                // Note: userProfile is mocked for now, ideally retrieved from useAuthStore if we had access here
+                // or passed in. We'll assume default age logic inside selectDomains matches generic adult if unspecified.
+                const { selected_domains, rule_ids_applied } = selectDomains({
+                    ...sessionData,
+                    patterns: initialPatterns
+                }, { age: 25 }); // Defaulting to 25 for prototype consistency
+
                 const newSession = {
                     session_id: crypto.randomUUID(),
                     created_at: new Date().toISOString(),
-                    processed: true, // Mark processed as we ran classification
+                    processed: true,
                     patterns: initialPatterns,
+                    selected_domains,
+                    rule_ids_applied,
                     ...sessionData
                 };
 
