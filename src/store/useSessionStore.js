@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { classifySession } from '../lib/patternClassifier';
 import { selectDomains } from '../lib/domainSelector';
+import { determineReadiness } from '../lib/readinessDetector';
 
 export const useSessionStore = create(
     persist(
@@ -16,10 +17,17 @@ export const useSessionStore = create(
                 // Run Domain Selection
                 // Note: userProfile is mocked for now, ideally retrieved from useAuthStore if we had access here
                 // or passed in. We'll assume default age logic inside selectDomains matches generic adult if unspecified.
-                const { selected_domains, rule_ids_applied } = selectDomains({
+                const userProfile = { age: 25 };
+                const { selected_domains, rule_ids_applied: domainRules } = selectDomains({
                     ...sessionData,
                     patterns: initialPatterns
-                }, { age: 25 }); // Defaulting to 25 for prototype consistency
+                }, userProfile);
+
+                // Run Readiness/Depth Detection
+                const { max_depth_level, rule_ids_applied: readinessRules, determined_at } = determineReadiness({
+                    ...sessionData,
+                    patterns: initialPatterns
+                }, userProfile);
 
                 const newSession = {
                     session_id: crypto.randomUUID(),
@@ -27,7 +35,12 @@ export const useSessionStore = create(
                     processed: true,
                     patterns: initialPatterns,
                     selected_domains,
-                    rule_ids_applied,
+                    domain_rules: domainRules,
+                    depth_control: {
+                        max_depth_level,
+                        rule_ids_applied: readinessRules,
+                        determined_at
+                    },
                     ...sessionData
                 };
 
