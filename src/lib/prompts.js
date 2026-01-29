@@ -42,8 +42,8 @@ TONE & PERSONALITY CONTROLLER
 `;
 
 export const AGE_CONTROLLER = {
-    // Mapping: youth -> 14-18
-    youth: `
+  // Mapping: youth -> 14-18
+  youth: `
     Target Age: 14-18
     Context Injection:
     - Assumed Capabilities: Emotional sensitivity, developing identity, limited life experience.
@@ -53,8 +53,8 @@ export const AGE_CONTROLLER = {
     Language Adjustment: Short sentences, very simple vocabulary, gentle/reassuring tone.
     `,
 
-    // Mapping: adults -> 19-35
-    adults: `
+  // Mapping: adults -> 19-35
+  adults: `
     Target Age: 19-35
     Context Injection:
     - Assumed Capabilities: Independent decision making, identity exploration, career/relationship questions.
@@ -63,8 +63,8 @@ export const AGE_CONTROLLER = {
     Language Adjustment: Medium sentence length, clear/modern vocabulary, supportive/reflective tone.
     `,
 
-    // Mapping: elders -> 36-60
-    elders: `
+  // Mapping: elders -> 36-60
+  elders: `
     Target Age: 36-60
     Context Injection:
     - Assumed Capabilities: Life experience, family/social responsibility, long-term perspective.
@@ -73,12 +73,59 @@ export const AGE_CONTROLLER = {
     Language Adjustment: Medium sentence length, mature/grounded vocabulary, calm/wise tone.
     `,
 
-    // Fallback/Legacy for kids (<14) - applying strictest minor protections
-    kids: `
+  // Fallback/Legacy for kids (<14) - applying strictest minor protections
+  kids: `
     Target Age: <14
     Context Injection:
     - strict focus on simple emotional regulation and play-based metaphors.
     - Safety Policy: STRICT minor protections. Always encourage talking to parents.
     Language Adjustment: Very short, simple.
     `
+};
+
+export const PROBLEM_CATEGORIZATION = {
+  "system_name": "Guru Sahayak – Problem Categorization Engine",
+  "task_id": "TASK_4_PROBLEM_CATEGORIZATION",
+  "task_scope": "Classify the user's expressed concern into a predefined problem category using only explicit user input.",
+  "strict_mode": true,
+  "categorization_rules": {
+    "use_only_user_words": true,
+    "no_inference_beyond_input": true,
+    "no_psychological_labeling": true,
+    "no_diagnosis": true
+  },
+  "allowed_problem_categories": [
+    {
+      "category_id": "FAMILY_RELATIONSHIP",
+      "description": "Issues involving parents, siblings, family expectations, misunderstandings, or household conflict."
+    },
+    {
+      "category_id": "ROMANTIC_RELATIONSHIP",
+      "description": "Issues involving partners, attraction, breakups, emotional closeness, or communication in romantic contexts."
+    },
+    {
+      "category_id": "FRIENDSHIP_SOCIAL",
+      "description": "Issues involving friends, peers, belonging, trust, or social conflict."
+    },
+    {
+      "category_id": "CAREER_EDUCATION",
+      "description": "Issues involving studies, career choices, work pressure, direction, or performance."
+    },
+    {
+      "category_id": "SELF_DOUBT_IDENTITY",
+      "description": "Issues involving confidence, self-worth, confusion about identity, or inner conflict."
+    },
+    {
+      "category_id": "STRESS_EMOTIONAL",
+      "description": "Issues involving stress, overwhelm, emotional burden, or feeling stuck."
+    },
+    {
+      "category_id": "PURPOSE_MEANING",
+      "description": "Issues involving lack of meaning, direction, motivation, or purpose in life."
+    },
+    {
+      "category_id": "DECISION_CONFLICT",
+      "description": "Issues involving difficulty choosing, fear of wrong decisions, or conflicting options"
+    }
+  ]
 };
