@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { classifySession } from '../lib/patternClassifier';
 
 export const useSessionStore = create(
     persist(
@@ -7,12 +8,15 @@ export const useSessionStore = create(
             sessions: [],
             currentSession: null,
 
-            // Actions
             addSession: (sessionData) => {
+                // Run Classification
+                const initialPatterns = classifySession(sessionData);
+
                 const newSession = {
                     session_id: crypto.randomUUID(),
                     created_at: new Date().toISOString(),
-                    processed: false,
+                    processed: true, // Mark processed as we ran classification
+                    patterns: initialPatterns,
                     ...sessionData
                 };
 
