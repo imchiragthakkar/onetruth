@@ -4,6 +4,7 @@ import { classifySession } from '../lib/patternClassifier';
 import { selectDomains } from '../lib/domainSelector';
 import { determineReadiness } from '../lib/readinessDetector';
 import { generateQuestionLadder } from '../lib/questionGenerator';
+import { generateReflections } from '../lib/wisdomFraming';
 
 export const useSessionStore = create(
     persist(
@@ -60,6 +61,40 @@ export const useSessionStore = create(
                 }));
 
                 return newSession;
+            },
+
+            saveResponse: (questionSequenceId, questionIndex, responseText) => {
+                set((state) => {
+                    const sessionIndex = state.sessions.findIndex(s => s.session_id === state.currentSession?.session_id);
+                    if (sessionIndex === -1) return state;
+
+                    const session = state.sessions[sessionIndex];
+
+                    // Generate Reflection
+                    const reflection = generateReflections(session, responseText);
+
+                    // Create Response Object
+                    const newResponse = {
+                        response_id: crypto.randomUUID(),
+                        question_sequence_id: questionSequenceId,
+                        question_index: questionIndex,
+                        text: responseText,
+                        reflection: reflection,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    // Initialize responses array if not exists
+                    const updatedResponses = session.responses ? [...session.responses, newResponse] : [newResponse];
+
+                    const updatedSession = { ...session, responses: updatedResponses };
+                    const newSessions = [...state.sessions];
+                    newSessions[sessionIndex] = updatedSession;
+
+                    return {
+                        sessions: newSessions,
+                        currentSession: updatedSession
+                    };
+                });
             },
 
             clearCurrentSession: () => set({ currentSession: null }),
