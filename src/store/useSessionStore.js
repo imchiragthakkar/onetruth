@@ -5,6 +5,7 @@ import { selectDomains } from '../lib/domainSelector';
 import { determineReadiness } from '../lib/readinessDetector';
 import { generateQuestionLadder } from '../lib/questionGenerator';
 import { generateReflections } from '../lib/wisdomFraming';
+import { generateActions } from '../lib/actionEngine';
 
 export const useSessionStore = create(
     persist(
@@ -87,6 +88,34 @@ export const useSessionStore = create(
                     const updatedResponses = session.responses ? [...session.responses, newResponse] : [newResponse];
 
                     const updatedSession = { ...session, responses: updatedResponses };
+                    const newSessions = [...state.sessions];
+                    newSessions[sessionIndex] = updatedSession;
+
+                    return {
+                        sessions: newSessions,
+                        currentSession: updatedSession
+                    };
+                });
+            },
+
+
+            completeSession: () => {
+                set((state) => {
+                    const sessionIndex = state.sessions.findIndex(s => s.session_id === state.currentSession?.session_id);
+                    if (sessionIndex === -1) return state;
+
+                    const session = state.sessions[sessionIndex];
+
+                    // Generate Actions
+                    const suggestedActions = generateActions(session);
+
+                    const updatedSession = {
+                        ...session,
+                        completed: true,
+                        completed_at: new Date().toISOString(),
+                        suggested_actions: suggestedActions
+                    };
+
                     const newSessions = [...state.sessions];
                     newSessions[sessionIndex] = updatedSession;
 
