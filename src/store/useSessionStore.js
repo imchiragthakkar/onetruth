@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { classifySession } from '../lib/patternClassifier';
 import { selectDomains } from '../lib/domainSelector';
 import { determineReadiness } from '../lib/readinessDetector';
+import { generateQuestionLadder } from '../lib/questionGenerator';
 
 export const useSessionStore = create(
     persist(
@@ -29,6 +30,14 @@ export const useSessionStore = create(
                     patterns: initialPatterns
                 }, userProfile);
 
+                // Run Question Generator
+                const readinessSessionContext = {
+                    ...sessionData,
+                    depth_control: { max_depth_level }
+                };
+
+                const questionLadder = generateQuestionLadder(readinessSessionContext);
+
                 const newSession = {
                     session_id: crypto.randomUUID(),
                     created_at: new Date().toISOString(),
@@ -41,6 +50,7 @@ export const useSessionStore = create(
                         rule_ids_applied: readinessRules,
                         determined_at
                     },
+                    question_ladder: questionLadder,
                     ...sessionData
                 };
 
