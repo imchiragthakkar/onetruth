@@ -7,6 +7,7 @@ import { generateQuestionLadder } from '../lib/questionGenerator';
 import { generateReflections } from '../lib/wisdomFraming';
 import { generateActions } from '../lib/actionEngine';
 import { detectCrisis } from '../lib/crisisDetection';
+import { generateSessionSummary } from '../lib/sessionSummaryGenerator';
 
 export const useSessionStore = create(
     persist(
@@ -149,11 +150,18 @@ export const useSessionStore = create(
                     // Generate Actions
                     const suggestedActions = generateActions(session);
 
+                    // Create temporary session object with actions to feed into summary generator
+                    const sessionForSummary = { ...session, suggested_actions: suggestedActions };
+
+                    // Generate Summary
+                    const sessionSummary = generateSessionSummary(sessionForSummary);
+
                     const updatedSession = {
                         ...session,
                         completed: true,
                         completed_at: new Date().toISOString(),
-                        suggested_actions: suggestedActions
+                        suggested_actions: suggestedActions,
+                        summary: sessionSummary
                     };
 
                     const newSessions = [...state.sessions];
