@@ -8,6 +8,7 @@ import { generateReflections } from '../lib/wisdomFraming';
 import { generateActions } from '../lib/actionEngine';
 import { detectCrisis } from '../lib/crisisDetection';
 import { generateSessionSummary } from '../lib/sessionSummaryGenerator';
+import { useMemoryStore } from './useMemoryStore';
 
 export const useSessionStore = create(
     persist(
@@ -163,6 +164,9 @@ export const useSessionStore = create(
                         suggested_actions: suggestedActions,
                         summary: sessionSummary
                     };
+
+                    // Update Long-Term Memory
+                    useMemoryStore.getState().updateMemory(updatedSession);
 
                     const newSessions = [...state.sessions];
                     newSessions[sessionIndex] = updatedSession;
