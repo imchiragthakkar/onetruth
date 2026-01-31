@@ -6,6 +6,7 @@ import { determineReadiness } from '../lib/readinessDetector';
 import { generateQuestionLadder } from '../lib/questionGenerator';
 import { generateReflections } from '../lib/wisdomFraming';
 import { generateActions } from '../lib/actionEngine';
+import { detectCrisis } from '../lib/crisisDetection';
 
 export const useSessionStore = create(
     persist(
@@ -38,7 +39,28 @@ export const useSessionStore = create(
                     depth_control: { max_depth_level }
                 };
 
-                const questionLadder = generateQuestionLadder(readinessSessionContext);
+                // Run Crisis Detection
+                const crisisCheck = detectCrisis(sessionData.raw_text, sessionData.intensity_level);
+
+                // Run Question Generator (Normal or Crisis Override)
+                let questionLadder;
+                let finalMaxDepth = max_depth_level;
+                let finalReadinessRules = readinessRules;
+
+                if (crisisCheck.is_crisis) {
+                    finalMaxDepth = "L1"; // Force safest depth
+                    questionLadder = [{
+                        id: "safety_override",
+                        text: "I am concerned about what you are sharing. Your safety is very important. Please know that there are people who can support you during this difficult time. Would you be open to connecting with a support resource?",
+                        type: "safety_check"
+                    }];
+                } else {
+                    const readinessSessionContext = {
+                        ...sessionData,
+                        depth_control: { max_depth_level }
+                    };
+                    questionLadder = generateQuestionLadder(readinessSessionContext);
+                }
 
                 const newSession = {
                     session_id: crypto.randomUUID(),
@@ -47,9 +69,11 @@ export const useSessionStore = create(
                     patterns: initialPatterns,
                     selected_domains,
                     domain_rules: domainRules,
+                    is_crisis_event: crisisCheck.is_crisis,
+                    crisis_data: crisisCheck.is_crisis ? crisisCheck : null,
                     depth_control: {
-                        max_depth_level,
-                        rule_ids_applied: readinessRules,
+                        max_depth_level: finalMaxDepth,
+                        rule_ids_applied: finalReadinessRules,
                         determined_at
                     },
                     question_ladder: questionLadder,
@@ -72,7 +96,23 @@ export const useSessionStore = create(
                     const session = state.sessions[sessionIndex];
 
                     // Generate Reflection
-                    const reflection = generateReflections(session, responseText);
+
+                    // Check for crisis in new response
+                    const currentIntensity = session.intensity_level || 5;
+                    const crisisCheck = detectCrisis(responseText, currentIntensity);
+
+                    let reflection;
+
+                    if (crisisCheck.is_crisis || session.is_crisis_event) {
+                        // Reuse the predefined safety message from detection logic if available, or a generic fallback
+                        reflection = crisisCheck.response_mode?.message || "Please prioritizing your safety and well-being. Connecting with a support professional can make a big difference.";
+
+                        // If this is a new crisis detection in an existing session, update the session state?
+                        // Ideally we should mark the session as crisis now. But we are inside saveResponse.
+                        // We will update the response object to indicate this interaction was a crisis trigger.
+                    } else {
+                        reflection = generateReflections(session, responseText);
+                    }
 
                     // Create Response Object
                     const newResponse = {
